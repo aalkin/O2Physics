@@ -19,7 +19,7 @@ using namespace o2::framework::expressions;
 
 constexpr int each = 10;
 
-struct ExampleFive {
+struct ExampleFivePartitions {
   HistogramRegistry registry{
     "registry",
     {
@@ -52,42 +52,34 @@ struct ExampleFive {
     }
   }
 
-  void processMC(aod::McCollision const& mccollision, aod::McParticles const& particles)
+  Partition<aod::McParticles> central = nabs(aod::mcparticle::eta) < etaCut && (aod::mcparticle::flags & (uint8_t)o2::aod::mcparticle::enums::PhysicalPrimary) == (uint8_t)o2::aod::mcparticle::enums::PhysicalPrimary;
+  Partition<aod::McParticles> v0m = ((aod::mcparticle::eta > 2.7f && aod::mcparticle::eta < 5.1f) || (aod::mcparticle::eta > -3.7f && aod::mcparticle::eta < -1.7f)) && (aod::mcparticle::flags & (uint8_t)o2::aod::mcparticle::enums::PhysicalPrimary) == (uint8_t)o2::aod::mcparticle::enums::PhysicalPrimary;
+
+  void processMC(aod::McCollision const& mccollision, aod::McParticles const&)
   {
     auto avpt = 0.f;
     auto count = 0;
-    for (auto& particle : particles) {
-      if (particle.isPhysicalPrimary()) {
-        if (std::abs(particle.eta()) < etaCut) {
-          count++;
-          if (!isnan(particle.pt())) {
-            avpt += particle.pt();
-          }
-          registry.fill(HIST("hptMC"), particle.pt());
-        }
+    for (auto& particle : central) {
+      count++;
+      if (!isnan(particle.pt())) {
+        avpt += particle.pt();
       }
+      registry.fill(HIST("hptMC"), particle.pt());
     }
     if (count > 0) {
       avpt /= (float)count;
     }
-    auto pcount = 0;
-    for (auto& particle : particles) {
-      if (particle.isPhysicalPrimary()) {
-        if ((particle.eta() > 2.7f && particle.eta() < 5.1f) || (particle.eta() > -3.7f && particle.eta() < -1.7f)) {
-          pcount++;
-        }
-      }
-    }
-    registry.fill(HIST("havptMC"), avpt, pcount);
+
+    registry.fill(HIST("havptMC"), avpt, v0m.size());
     if (mccollision.index() % each == 0) {
       LOGP(info, "MC Collision {} has {} primary particles, average pt = {}", mccollision.index(), count, avpt);
     }
   }
 
-  PROCESS_SWITCH(ExampleFive, processMC, "Process MC info", false);
+  PROCESS_SWITCH(ExampleFivePartitions, processMC, "Process MC info", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
-  return WorkflowSpec{adaptAnalysisTask<ExampleFive>(cfgc)};
+  return WorkflowSpec{adaptAnalysisTask<ExampleFivePartitions>(cfgc)};
 }

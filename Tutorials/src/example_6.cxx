@@ -17,39 +17,42 @@ using namespace o2;
 using namespace o2::framework;
 using namespace o2::framework::expressions;
 
-using CollisionsWLabels = soa::Join<aod::Collisions, aod::McCollisionLabels>;
-
-namespace o2::aod::idx
+namespace o2::aod::mcmult
 {
-DECLARE_SOA_INDEX_COLUMN(CollisionsWLabel, collision);
-DECLARE_SOA_INDEX_COLUMN(McCollision, mccollision);
-} // namespace o2::aod::idx
+DECLARE_SOA_COLUMN(MultV0Mgen, multV0Mgen, int);
+} // namespace o2::aod::mcmult
 
 namespace o2::aod
 {
-DECLARE_SOA_INDEX_TABLE_USER(MatchedMCRec, McCollisions, "MMCR", idx::McCollisionId, idx::CollisionsWLabelId)
+DECLARE_SOA_TABLE(MultsGen, "AOD", "MULTSGEN", mcmult::MultV0Mgen);
 } // namespace o2::aod
 
 struct PreTask {
-  Builds<aod::MatchedMCRec> idx;
-  void init(InitContext const&){};
+  Produces<aod::MultsGen> mult;
+  Filter inV0M = (aod::mcparticle::eta > 2.7f && aod::mcparticle::eta < 5.1f) || (aod::mcparticle::eta > -3.7f && aod::mcparticle::eta < -1.7f);
+
+  void process(aod::McCollision const&, soa::Filtered<aod::McParticles> const& particles)
+  {
+    mult(particles.size());
+  }
 };
 
 constexpr int each = 10;
 
-struct ExampleOne {
+struct ExampleSix {
   HistogramRegistry registry{
     "registry",
     {
       {"hpt", " ; p_{T} (GeV/c)", {HistType::kTH1F, {{101, -0.05, 10.05}}}},                             //
       {"hptMC", " ; p_{T} (GeV/c)", {HistType::kTH1F, {{101, -0.05, 10.05}}}},                           //
-      {"havpt", "; <p_{T}> (GeV/c) ; V0M", {HistType::kTH2F, {{21, -0.05, 2.05}, {101, -0.5, 100.5}}}},  //
-      {"havptMC", "; <p_{T}> (GeV/c) ; V0M", {HistType::kTH2F, {{21, -0.05, 2.05}, {101, -0.5, 100.5}}}} //
+      {"havpt", "; <p_{T}> (GeV/c) ; V0M", {HistType::kTH2F, {{21, -0.05, 2.05}, {201, -0.5, 200.5}}}},  //
+      {"havptMC", "; <p_{T}> (GeV/c) ; V0M", {HistType::kTH2F, {{21, -0.05, 2.05}, {201, -0.5, 200.5}}}} //
     }                                                                                                    //
   };
 
   Configurable<float> etaCut{"etaCut", 0.8, "track eta cut"};
   Filter etaFilter = nabs(aod::track::eta) <= etaCut;
+  Filter trackFilter = aod::track::trackType != (uint8_t)aod::track::TrackTypeEnum::Run2Tracklet;
 
   using MyTracks = soa::Filtered<aod::Tracks>;
 
@@ -57,9 +60,7 @@ struct ExampleOne {
   {
     auto avpt = 0.f;
     for (auto& track : tracks) {
-      if (!isnan(track.pt())) {
-        avpt += track.pt();
-      }
+      avpt += track.pt();
       registry.fill(HIST("hpt"), track.pt());
     }
     if (tracks.size() > 0) {
@@ -71,17 +72,13 @@ struct ExampleOne {
     }
   }
 
-  Partition<aod::McParticles> central = nabs(aod::mcparticle::eta) <= etaCut;
-  Partition<aod::McParticles> v0m = (aod::mcparticle::eta > 2.7f && aod::mcparticle::eta < 5.1f) || (aod::mcparticle::eta > -3.7f && aod::mcparticle::eta < -1.7f);
+  Filter etaFilterMC = nabs(aod::mcparticle::eta) <= etaCut;
 
-  void processMC(soa::Join<aod::McCollisions, aod::MatchedMCRec>::iterator const& matched, aod::McParticles const&)
+  void processMC(soa::Join<aod::McCollisions, aod::MultsGen>::iterator const& mccollision, soa::Filtered<aod::McParticles> const& particles)
   {
-    if (!matched.has_collision()) {
-      return;
-    }
     auto avpt = 0.f;
     auto count = 0;
-    for (auto& particle : central) {
+    for (auto& particle : particles) {
       if (particle.isPhysicalPrimary()) {
           count++;
           if (!isnan(particle.pt())) {
@@ -93,25 +90,19 @@ struct ExampleOne {
     if (count > 0) {
       avpt /= (float)count;
     }
-    auto pcount = 0;
-    for (auto& particle : v0m) {
-      if (particle.isPhysicalPrimary()) {
-          pcount++;
-      }
-    }
-    registry.fill(HIST("havptMC"), avpt, pcount);
-    if (matched.index() % each == 0) {
-      LOGP(info, "MC Collision {} has {} primary particles, average pt = {}", matched.index(), count, avpt);
+    registry.fill(HIST("havptMC"), avpt, mccollision.multV0Mgen());
+    if (mccollision.index() % each == 0) {
+      LOGP(info, "MC Collision {} has {} primary particles, average pt = {}", mccollision.index(), count, avpt);
     }
   }
 
-  PROCESS_SWITCH(ExampleOne, processMC, "Process MC info", false);
+  PROCESS_SWITCH(ExampleSix, processMC, "Process MC info", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
   return WorkflowSpec{
     adaptAnalysisTask<PreTask>(cfgc),   //
-    adaptAnalysisTask<ExampleOne>(cfgc) //
+    adaptAnalysisTask<ExampleSix>(cfgc) //
   };
 }
