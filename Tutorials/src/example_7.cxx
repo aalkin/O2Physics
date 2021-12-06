@@ -43,7 +43,13 @@ struct PreTask {
 
   void process(aod::McCollision const&, soa::Filtered<aod::McParticles> const& particles)
   {
-    mult(particles.size());
+    auto count = 0;
+    for (auto& particle : particles) {
+      if (particle.isPhysicalPrimary()) {
+        count++;
+      }
+    }
+    mult(count);
   }
 };
 

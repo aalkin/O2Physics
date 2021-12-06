@@ -58,21 +58,19 @@ struct ExampleFivePartitions {
   void processMC(aod::McCollision const& mccollision, aod::McParticles const&)
   {
     auto avpt = 0.f;
-    auto count = 0;
     for (auto& particle : central) {
-      count++;
       if (!isnan(particle.pt())) {
         avpt += particle.pt();
       }
       registry.fill(HIST("hptMC"), particle.pt());
     }
-    if (count > 0) {
-      avpt /= (float)count;
+    if (central.size() > 0) {
+      avpt /= (float)central.size();
     }
 
     registry.fill(HIST("havptMC"), avpt, v0m.size());
     if (mccollision.index() % each == 0) {
-      LOGP(info, "MC Collision {} has {} primary particles, average pt = {}", mccollision.index(), count, avpt);
+      LOGP(info, "MC Collision {} has {} primary particles, average pt = {}", mccollision.index(), central.size(), avpt);
     }
   }
 
