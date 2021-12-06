@@ -28,7 +28,7 @@ DECLARE_SOA_INDEX_COLUMN(McCollision, mccollision);
 namespace o2::aod
 {
 DECLARE_SOA_INDEX_TABLE_USER(MatchedMCRec, McCollisions, "MMCR", idx::McCollisionId, idx::CollisionsWLabelId)
-}
+} // namespace o2::aod
 
 struct PreTask {
   Builds<aod::MatchedMCRec> idx;
@@ -71,33 +71,32 @@ struct ExampleOne {
     }
   }
 
-  void processMC(soa::Join<aod::McCollisions, aod::MatchedMCRec>::iterator const& matched, aod::McParticles const& particles)
+  Partition<aod::McParticles> central = nabs(aod::mcparticle::eta) <= etaCut;
+  Partition<aod::McParticles> v0m = (aod::mcparticle::eta > 2.7f && aod::mcparticle::eta < 5.1f) || (aod::mcparticle::eta > -3.7f && aod::mcparticle::eta < -1.7f);
+
+  void processMC(soa::Join<aod::McCollisions, aod::MatchedMCRec>::iterator const& matched, aod::McParticles const&)
   {
     if (!matched.has_collision()) {
       return;
     }
     auto avpt = 0.f;
     auto count = 0;
-    for (auto& particle : particles) {
+    for (auto& particle : central) {
       if (particle.isPhysicalPrimary()) {
-        if (std::abs(particle.eta()) < etaCut) {
           count++;
           if (!isnan(particle.pt())) {
             avpt += particle.pt();
           }
           registry.fill(HIST("hptMC"), particle.pt());
-        }
       }
     }
     if (count > 0) {
       avpt /= (float)count;
     }
     auto pcount = 0;
-    for (auto& particle : particles) {
+    for (auto& particle : v0m) {
       if (particle.isPhysicalPrimary()) {
-        if ((particle.eta() > 2.7f && particle.eta() < 5.1f) || (particle.eta() > -3.7f && particle.eta() < -1.7f)) {
           pcount++;
-        }
       }
     }
     registry.fill(HIST("havptMC"), avpt, pcount);
