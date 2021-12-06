@@ -18,7 +18,7 @@ using namespace o2::framework::expressions;
 
 constexpr int each = 10;
 
-struct ExampleOne {
+struct ExampleThree {
   HistogramRegistry registry{
     "registry",
     {
@@ -48,5 +48,5 @@ struct ExampleOne {
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
-  return WorkflowSpec{adaptAnalysisTask<ExampleOne>(cfgc)};
+  return WorkflowSpec{adaptAnalysisTask<ExampleThree>(cfgc)};
 }

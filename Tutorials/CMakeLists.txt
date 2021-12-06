@@ -206,8 +206,16 @@ o2physics_add_dpl_workflow(example-5
                   SOURCES src/example_5.cxx
                   PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore
                   COMPONENT_NAME AnalysisTutorial)
+o2physics_add_dpl_workflow(example-5-partitions
+                  SOURCES src/example_5_partitions.cxx
+                  PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore
+                  COMPONENT_NAME AnalysisTutorial)
 o2physics_add_dpl_workflow(example-6
                   SOURCES src/example_6.cxx
+                  PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore
+                  COMPONENT_NAME AnalysisTutorial)
+o2physics_add_dpl_workflow(example-7
+                  SOURCES src/example_7.cxx
                   PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore
                   COMPONENT_NAME AnalysisTutorial)
 

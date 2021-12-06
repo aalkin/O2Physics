@@ -16,12 +16,12 @@ using namespace o2;
 using namespace o2::framework;
 using namespace o2::framework::expressions;
 
-struct ExampleOne {
+struct ExampleTwo {
   HistogramRegistry registry{
     "registry",
     {
-      {"hpt", " ; p_{T} (GeV/c)", {HistType::kTH1F, {{101, -0.1, 10.1}}}} //
-    }                                                                     //
+      {"hpt", " ; p_{T} (GeV/c)", {HistType::kTH1F, {{101, -0.05, 10.05}}}} //
+    }                                                                       //
   };
 
   void process(aod::Tracks const& tracks)
@@ -34,5 +34,5 @@ struct ExampleOne {
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
-  return WorkflowSpec{adaptAnalysisTask<ExampleOne>(cfgc)};
+  return WorkflowSpec{adaptAnalysisTask<ExampleTwo>(cfgc)};
 }

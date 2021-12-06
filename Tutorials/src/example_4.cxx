@@ -18,7 +18,7 @@ using namespace o2::framework::expressions;
 
 constexpr int each = 10;
 
-struct ExampleOne {
+struct ExampleFour {
   HistogramRegistry registry{
     "registry",
     {
@@ -31,15 +31,14 @@ struct ExampleOne {
 
   Configurable<float> etaCut{"etaCut", 0.8, "track eta cut"};
   Filter etaFilter = nabs(aod::track::eta) <= etaCut;
+  Filter trackFilter = aod::track::trackType != (uint8_t)aod::track::TrackTypeEnum::Run2Tracklet;
   Filter etaFilterMC = nabs(aod::mcparticle::eta) <= etaCut;
 
   void process(aod::Collision const& collision, soa::Filtered<aod::Tracks> const& tracks)
   {
     auto avpt = 0.f;
     for (auto& track : tracks) {
-      if (!isnan(track.pt())) {
-        avpt += track.pt();
-      }
+      avpt += track.pt();
       registry.fill(HIST("hpt"), track.pt());
     }
     if (tracks.size() > 0) {
@@ -73,10 +72,10 @@ struct ExampleOne {
     }
   }
 
-  PROCESS_SWITCH(ExampleOne, processMC, "Process MC info", false);
+  PROCESS_SWITCH(ExampleFour, processMC, "Process MC info", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
-  return WorkflowSpec{adaptAnalysisTask<ExampleOne>(cfgc)};
+  return WorkflowSpec{adaptAnalysisTask<ExampleFour>(cfgc)};
 }
