@@ -11,6 +11,7 @@
 
 add_subdirectory(Skimming)
 add_subdirectory(OpenData)
+add_subdirectory(HF-hands-on)
 
 o2physics_add_dpl_workflow(histogram-track-selection
                     SOURCES src/histogramTrackSelection.cxx
@@ -205,45 +206,5 @@ o2physics_add_dpl_workflow(reweighting
 o2physics_add_dpl_workflow(hep-mc
                   SOURCES src/hepMC.cxx
                   PUBLIC_LINK_LIBRARIES O2::Framework
-                  COMPONENT_NAME AnalysisTutorial)
-
-o2physics_add_dpl_workflow(example-1
-                  SOURCES src/example_1.cxx
-                  PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore
-                  COMPONENT_NAME AnalysisTutorial)
-
-o2physics_add_dpl_workflow(example-2
-                  SOURCES src/example_2.cxx
-                  PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore
-                  COMPONENT_NAME AnalysisTutorial)
-
-o2physics_add_dpl_workflow(example-3
-                  SOURCES src/example_3.cxx
-                  PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore
-                  COMPONENT_NAME AnalysisTutorial)
-
-o2physics_add_dpl_workflow(example-4
-                  SOURCES src/example_4.cxx
-                  PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore
-                  COMPONENT_NAME AnalysisTutorial)
-
-o2physics_add_dpl_workflow(example-5
-                  SOURCES src/example_5.cxx
-                  PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore
-                  COMPONENT_NAME AnalysisTutorial)
-
-o2physics_add_dpl_workflow(example-5-partitions
-                  SOURCES src/example_5_partitions.cxx
-                  PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore
-                  COMPONENT_NAME AnalysisTutorial)
-
-o2physics_add_dpl_workflow(example-6
-                  SOURCES src/example_6.cxx
-                  PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore
-                  COMPONENT_NAME AnalysisTutorial)
-
-o2physics_add_dpl_workflow(example-7
-                  SOURCES src/example_7.cxx
-                  PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore
                   COMPONENT_NAME AnalysisTutorial)
 

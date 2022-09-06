@@ -17,9 +17,35 @@ using namespace o2;
 using namespace o2::framework;
 using namespace o2::framework::expressions;
 
+namespace o2::aod::mcmult
+{
+DECLARE_SOA_COLUMN(MultV0Mgen, multV0Mgen, int);
+} // namespace o2::aod::mcmult
+
+namespace o2::aod
+{
+DECLARE_SOA_TABLE(MultsGen, "AOD", "MULTSGEN", mcmult::MultV0Mgen);
+} // namespace o2::aod
+
+struct PreTask {
+  Produces<aod::MultsGen> mult;
+  Filter inV0M = (aod::mcparticle::eta > 2.7f && aod::mcparticle::eta < 5.1f) || (aod::mcparticle::eta > -3.7f && aod::mcparticle::eta < -1.7f);
+
+  void process(aod::McCollision const&, soa::Filtered<aod::McParticles> const& particles)
+  {
+    auto count = 0;
+    for (auto& particle : particles) {
+      if (particle.isPhysicalPrimary()) {
+        count++;
+      }
+    }
+    mult(count);
+  }
+};
+
 constexpr int each = 10;
 
-struct ExampleFivePartitions {
+struct ExampleSix {
   HistogramRegistry registry{
     "registry",
     {
@@ -46,38 +72,43 @@ struct ExampleFivePartitions {
     if (tracks.size() > 0) {
       avpt /= (float)tracks.size();
     }
-    registry.fill(HIST("havpt"), avpt, collision.multV0M());
+    registry.fill(HIST("havpt"), avpt, collision.multFV0M());
     if (collision.index() % each == 0) {
       LOGP(info, "Collision {} has {} tracks, average pt = {}", collision.index(), tracks.size(), avpt);
     }
   }
 
-  Partition<aod::McParticles> central = nabs(aod::mcparticle::eta) < etaCut && (aod::mcparticle::flags & (uint8_t)o2::aod::mcparticle::enums::PhysicalPrimary) == (uint8_t)o2::aod::mcparticle::enums::PhysicalPrimary;
-  Partition<aod::McParticles> v0m = ((aod::mcparticle::eta > 2.7f && aod::mcparticle::eta < 5.1f) || (aod::mcparticle::eta > -3.7f && aod::mcparticle::eta < -1.7f)) && (aod::mcparticle::flags & (uint8_t)o2::aod::mcparticle::enums::PhysicalPrimary) == (uint8_t)o2::aod::mcparticle::enums::PhysicalPrimary;
+  Filter etaFilterMC = nabs(aod::mcparticle::eta) <= etaCut;
 
-  void processMC(aod::McCollision const& mccollision, aod::McParticles const&)
+  void processMC(soa::Join<aod::McCollisions, aod::MultsGen>::iterator const& mccollision, soa::Filtered<aod::McParticles> const& particles)
   {
     auto avpt = 0.f;
-    for (auto& particle : central) {
-      if (!isnan(particle.pt())) {
-        avpt += particle.pt();
+    auto count = 0;
+    for (auto& particle : particles) {
+      if (particle.isPhysicalPrimary()) {
+        count++;
+        if (!isnan(particle.pt())) {
+          avpt += particle.pt();
+        }
+        registry.fill(HIST("hptMC"), particle.pt());
       }
-      registry.fill(HIST("hptMC"), particle.pt());
     }
-    if (central.size() > 0) {
-      avpt /= (float)central.size();
+    if (count > 0) {
+      avpt /= (float)count;
     }
-
-    registry.fill(HIST("havptMC"), avpt, v0m.size());
+    registry.fill(HIST("havptMC"), avpt, mccollision.multV0Mgen());
     if (mccollision.index() % each == 0) {
-      LOGP(info, "MC Collision {} has {} primary particles, average pt = {}", mccollision.index(), central.size(), avpt);
+      LOGP(info, "MC Collision {} has {} primary particles, average pt = {}", mccollision.index(), count, avpt);
     }
   }
 
-  PROCESS_SWITCH(ExampleFivePartitions, processMC, "Process MC info", false);
+  PROCESS_SWITCH(ExampleSix, processMC, "Process MC info", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
-  return WorkflowSpec{adaptAnalysisTask<ExampleFivePartitions>(cfgc)};
+  return WorkflowSpec{
+    adaptAnalysisTask<PreTask>(cfgc),   //
+    adaptAnalysisTask<ExampleSix>(cfgc) //
+  };
 }
