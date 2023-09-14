@@ -93,10 +93,10 @@ struct PureMcMultiplicityCounter {
       registry.add({"Events/NtrkZvtx", " ; N_{trk}; Z_{vtx} (cm); events", {HistType::kTH2F, {MultAxis, ZAxis}}});
     }
     if (doprocessResponse) {
-      registry.add({"MCEvents/VertexCorrelation", " ; Z_{vtx}^{gen} (cm); Z_{vtx}^{rec} (cm)", {HistType::kTH2F, {ZAxis, ZAxis}}});
-      registry.add({"MCEvents/Efficiency", "", {HistType::kTH1F, {{6, -0.5, 5.5}}}});
-      registry.add({"MCEvents/Response", " ; N_{gen}; N_{rec}", {HistType::kTH2F, {MultAxis, MultAxis}}});
-      auto eff = registry.get<TH1>(HIST("MCEvents/Efficiency"));
+      registry.add({"MCEvents/VertexCorrelationPerProcessID", " ; Z_{vtx}^{gen} (cm); Z_{vtx}^{rec} (cm); process ID", {HistType::kTHnSparseF, {ZAxis, ZAxis, ProcAxis}}});
+      registry.add({"MCEvents/EfficiencyPerProcessID", "", {HistType::kTH2F, {{6, -0.5, 5.5}, ProcAxis}}});
+      registry.add({"MCEvents/ResponsePerProcessID", " ; N_{gen}; N_{rec}; processID", {HistType::kTHnSparseF, {MultAxis, MultAxis, ProcAxis}}});
+      auto eff = registry.get<TH2>(HIST("MCEvents/EfficiencyPerProcessID"));
       auto* x = eff->GetXaxis();
       x->SetBinLabel(1, "Generated");
       x->SetBinLabel(2, "Generate INEL>0");
@@ -105,9 +105,9 @@ struct PureMcMultiplicityCounter {
       x->SetBinLabel(5, "Selected");
       x->SetBinLabel(6, "Selected INEL>0");
 
-      registry.add({"MCEvents/EfficiencyMultiplicityN", " ; N_{gen}", {HistType::kTH1F, {MultAxis}}});
-      registry.add({"MCEvents/EfficiencyMultiplicityNExtra", " ; N_{gen}", {HistType::kTH1F, {MultAxis}}});
-      registry.add({"MCEvents/EfficiencyMultiplicityD", " ; N_{gen}", {HistType::kTH1F, {MultAxis}}});
+      registry.add({"MCEvents/EfficiencyMultiplicityNPerProcessID", " ; N_{gen}; process ID", {HistType::kTH2F, {MultAxis, ProcAxis}}});
+      registry.add({"MCEvents/EfficiencyMultiplicityNExtraPerProcessID", " ; N_{gen}; process ID", {HistType::kTH2F, {MultAxis, ProcAxis}}});
+      registry.add({"MCEvents/EfficiencyMultiplicityDPerProcessID", " ; N_{gen}; process ID", {HistType::kTH2F, {MultAxis, ProcAxis}}});
     }
     if (doprocessEfficiency) {
       registry.add({"Particles/Primaries/EfficiencyN", " ; p_{T} (GeV/c)", {HistType::kTH1F, {PtAxisEff}}});
@@ -206,9 +206,9 @@ struct PureMcMultiplicityCounter {
 
   PROCESS_SWITCH(PureMcMultiplicityCounter, processReco, "Process smeared tracks", false);
 
-  void processResponse(aod::McCollision const& mccollision, soa::SmallGroups<soa::Join<aod::Collisions, aod::McCollisionLabels>> const& collisions, aod::McParticles const& particles, soa::Join<aod::Tracks, aod::TracksDCA, aod::McTrackLabels> const& tracks)
+  void processResponse(soa::Join<aod::McCollisions, aod::HepMCXSections, aod::HepMCPdfInfos>::iterator const& mccollision, soa::SmallGroups<soa::Join<aod::Collisions, aod::McCollisionLabels>> const& collisions, aod::McParticles const& particles, soa::Join<aod::Tracks, aod::TracksDCA, aod::McTrackLabels> const& tracks)
   {
-    registry.fill(HIST("MCEvents/Efficiency"), 0);
+    registry.fill(HIST("MCEvents/EfficiencyPerProcessID"), 0, mccollision.processId());
     auto Np = 0;
     for (auto const& particle : particles) {
       if (!particle.isPhysicalPrimary()) {
@@ -230,21 +230,21 @@ struct PureMcMultiplicityCounter {
       }
       ++Np;
     }
-    registry.fill(HIST("MCEvents/EfficiencyMultiplicityD"), Np);
+    registry.fill(HIST("MCEvents/EfficiencyMultiplicityDPerProcessID"), Np, mccollision.processId());
     if (Np > 0) {
-      registry.fill(HIST("MCEvents/Efficiency"), 1);
+      registry.fill(HIST("MCEvents/EfficiencyPerProcessID"), 1, mccollision.processId());
     }
     if (collisions.size() > 0) {
-      registry.fill(HIST("MCEvents/EfficiencyMultiplicityN"), Np);
+      registry.fill(HIST("MCEvents/EfficiencyMultiplicityNPerProcessID"), Np, mccollision.processId());
     }
     if (collisions.size() > 1) {
       for (auto i = 1; i < collisions.size(); ++i) {
-        registry.fill(HIST("MCEvents/EfficiencyMultiplicityNExtra"), Np);
+        registry.fill(HIST("MCEvents/EfficiencyMultiplicityNExtraPerProcessID"), Np, mccollision.processId());
       }
     }
     for (auto& collision : collisions) {
       auto Ntrk = 0;
-      registry.fill(HIST("MCEvents/Efficiency"), 2);
+      registry.fill(HIST("MCEvents/EfficiencyPerProcessID"), 2, mccollision.processId());
       auto tracksample = tracks.sliceBy(perCol, collision.globalIndex());
       for (auto& track : tracksample) {
         if (std::abs(track.eta()) < etaRange) {
@@ -252,10 +252,10 @@ struct PureMcMultiplicityCounter {
         }
       }
       if (Ntrk > 0) {
-        registry.fill(HIST("MCEvents/Efficiency"), 3);
+        registry.fill(HIST("MCEvents/EfficiencyPerProcessID"), 3, mccollision.processId());
       }
-      registry.fill(HIST("MCEvents/Response"), Np, Ntrk);
-      registry.fill(HIST("MCEvents/VertexCorrelation"), mccollision.posZ(), collision.posZ());
+      registry.fill(HIST("MCEvents/ResponsePerProcessID"), Np, Ntrk, mccollision.processId());
+      registry.fill(HIST("MCEvents/VertexCorrelationPerProcessID"), mccollision.posZ(), collision.posZ(), mccollision.processId());
     }
   }
 
