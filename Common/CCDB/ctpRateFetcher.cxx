@@ -19,6 +19,7 @@
 #include "DataFormatsCTP/Scalers.h"
 #include "DataFormatsParameters/GRPLHCIFData.h"
 #include "CCDB/BasicCCDBManager.h"
+#include "Framework/AnalysisHelpers.h"
 
 namespace o2
 {

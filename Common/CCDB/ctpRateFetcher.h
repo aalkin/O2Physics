@@ -15,7 +15,26 @@
 #include <string>
 
 #include "CCDB/BasicCCDBManager.h"
-#include "Framework/AnalysisHelpers.h"
+#include "Framework/Plugins.h"
+
+namespace o2::framework {
+/// This helper allows you to fetch a Sevice from the context or
+/// by using some singleton. This hopefully will hide the Singleton and
+/// We will be able to retrieve it in a more thread safe manner later on.
+template <typename T>
+struct Service {
+  T* service;
+
+  decltype(auto) operator->() const
+  {
+    if constexpr (is_base_of_template_v<LoadableServicePlugin, T>) {
+      return service->get();
+    } else {
+      return service;
+    }
+  }
+};
+}
 
 namespace o2
 {
