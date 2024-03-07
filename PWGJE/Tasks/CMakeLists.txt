@@ -124,4 +124,12 @@ if(FastJet_FOUND)
                         SOURCES jetLundReclustering.cxx
                         PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::PWGJECore O2Physics::AnalysisCore FastJet::FastJet FastJet::Contrib
                         COMPONENT_NAME Analysis)
+    o2physics_add_dpl_workflow(jet-testing
+                        SOURCES jettesting.cxx
+                        PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::PWGJECore O2Physics::AnalysisCore FastJet::FastJet FastJet::Contrib
+                        COMPONENT_NAME Analysis)
+    o2physics_add_dpl_workflow(jet-testing-consumer
+                        SOURCES jettestingconsumer.cxx
+                        PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::PWGJECore O2Physics::AnalysisCore FastJet::FastJet FastJet::Contrib
+                        COMPONENT_NAME Analysis)
 endif()
