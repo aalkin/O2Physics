@@ -18,16 +18,18 @@ namespace pwgmm::mult
 using namespace o2;
 
 template <typename T>
-concept hasSimCent = (T*)
-{
-  requires {T::template contains<aod::HepMCHeavyIons>();}
-};
+concept hasSimCent = (T*){
+  requires {T::template contains<aod::HepMCHeavyIons>();
+} // namespace pwgmm::mult
+}
+;
 
 template <typename T>
-concept hasRecoCent = (T*)
-{
-  requires {T::template contains<aod::CentFT0Cs>() || T::template contains<aod::CentFT0Ms>();}
-};
+concept hasRecoCent = (T*){
+  requires {T::template contains<aod::CentFT0Cs>() || T::template contains<aod::CentFT0Ms>();
+}
+}
+;
 
 } // namespace pwgmm::mult
 
