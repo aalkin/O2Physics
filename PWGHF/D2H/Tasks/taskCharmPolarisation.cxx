@@ -1979,11 +1979,6 @@ struct HfTaskCharmPolarisation {
   template <charm_polarisation::DecayChannel Channel, bool WithMl, bool DoMc, bool StudyLcPkPiBkgMc = false, bool WithEp = false, typename Cand, typename Part, typename Trk, typename T, typename QVecs = void>
   bool runPolarisationAnalysis(Cand const& candidate, int bkgRotationId, T numPvContributors, Part const& particles, Trk const& /*tracks*/, float centrality = -999.f, QVecs const* qVecs = nullptr)
   {
-    if constexpr (WithEp && !DoMc) {
-      assert(qVecs && "EP analysis requested but qVecs == nullptr");
-      assert(centrality && "EP analysis requested but centrality == nullptr");
-    }
-
     constexpr std::size_t NScores{3u};
 
     bool isCandidateInSignalRegion{false};
@@ -2577,7 +2572,6 @@ struct HfTaskCharmPolarisation {
   void runMcGenPolarisationAnalysis(Part const& mcParticle, Particles const& mcParticles, T numPvContributors, Cent const* centrality = nullptr)
   {
     if constexpr (WithCent) {
-      assert(qVecs && "Centrality analysis requested but Cent == nullptr");
     }
     if constexpr (WithCent) {
       if (*centrality < centralityMin || *centrality > centralityMax) {
