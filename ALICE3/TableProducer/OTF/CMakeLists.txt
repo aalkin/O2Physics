@@ -38,3 +38,18 @@ o2physics_add_dpl_workflow(on-the-fly-detector-geometry-provider
                     SOURCES onTheFlyDetectorGeometryProvider.cxx
                     PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore O2Physics::ALICE3Core O2Physics::FastTracker
                     COMPONENT_NAME Analysis)
+
+o2physics_add_dpl_workflow(test-ccdb-consumer-0
+                    SOURCES testCcdbConsumer0.cxx
+                    PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore O2Physics::ALICE3Core O2Physics::FastTracker
+                    COMPONENT_NAME Analysis)
+
+o2physics_add_dpl_workflow(test-ccdb-consumer-1
+                    SOURCES testCcdbConsumer1.cxx
+                    PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore O2Physics::ALICE3Core O2Physics::FastTracker
+                    COMPONENT_NAME Analysis)
+
+o2physics_add_dpl_workflow(test-ccdb-consumer-2
+                    SOURCES testCcdbConsumer2.cxx
+                    PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore O2Physics::ALICE3Core O2Physics::FastTracker
+                    COMPONENT_NAME Analysis)
