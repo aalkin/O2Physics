@@ -37,6 +37,8 @@ class TrackSmearer
   bool adoptTable(int pdg, const uint8_t* buffer, size_t size, bool forceReload = false);
   bool viewTable(int pdg, const uint8_t* buffer, size_t size, bool forceReload = false);
   bool viewTable(int pdg, std::span<std::byte> const& span, bool forceReload = false);
+  bool viewTable(int pdg, std::string_view sv, bool forceReload = false);
+
   bool hasTable(int pdg) const;
 
   void useEfficiency(bool val) { mUseEfficiency = val; }

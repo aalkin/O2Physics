@@ -182,6 +182,11 @@ bool TrackSmearer::viewTable(int pdg, std::span<std::byte> const& span, bool for
   return viewTable(pdg, reinterpret_cast<const uint8_t*>(span.data()), span.size_bytes(), forceReload);
 }
 
+bool TrackSmearer::viewTable(int pdg, std::string_view sv, bool forceReload)
+{
+  return viewTable(pdg, reinterpret_cast<const uint8_t*>(sv.data()), sv.size(), forceReload);
+}
+
 bool TrackSmearer::hasTable(int pdg) const
 {
   const int ipdg = getIndexPDG(pdg);
