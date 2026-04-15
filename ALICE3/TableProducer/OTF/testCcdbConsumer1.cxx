@@ -17,8 +17,6 @@
 ///
 
 #include "ALICE3/Core/FlatTrackSmearer.h"
-#include "ALICE3/Core/FlatLutEntry.h"
-#include "ALICE3/Core/FastTracker.h"
 #include "ALICE3/Core/TrackUtilities.h"
 #include "ALICE3/DataModel/OTFLUT.h"
 #include <Framework/O2DatabasePDGPlugin.h>
@@ -29,7 +27,6 @@
 #include <Framework/HistogramRegistry.h>
 #include <Framework/runDataProcessing.h>
 
-#include <map>
 #include <string>
 #include <vector>
 
@@ -53,19 +50,14 @@ struct TestCcdbConsumer1 {
 
   void process(o2::aod::McCollisions const& mcCollisions, o2::aod::McParticles const& mcParticles, o2::aod::A3LookUpTables const& luts)
   {
-    const auto thisTable = luts.rawIteratorAt(0);
-    auto lutEl = thisTable.lutEl();
-    auto lutMu = thisTable.lutMu();
-    auto lutPi = thisTable.lutPi();
-    auto lutKa = thisTable.lutKa();
-    auto lutPr = thisTable.lutPr();
-    smearer.viewTable(PDG_t::kElectron, reinterpret_cast<const uint8_t*>(lutEl.data()), lutEl.size());
-    smearer.viewTable(PDG_t::kMuonMinus, reinterpret_cast<const uint8_t*>(lutMu.data()), lutMu.size());
-    smearer.viewTable(PDG_t::kPiPlus, reinterpret_cast<const uint8_t*>(lutPi.data()), lutPi.size());
-    smearer.viewTable(PDG_t::kKPlus, reinterpret_cast<const uint8_t*>(lutKa.data()), lutKa.size());
-    smearer.viewTable(PDG_t::kProton, reinterpret_cast<const uint8_t*>(lutPr.data()), lutPr.size());
+    const auto thisTable = luts.begin();
+    smearer.viewTable(PDG_t::kElectron, thisTable.lutEl());
+    smearer.viewTable(PDG_t::kMuonMinus,  thisTable.lutMu());
+    smearer.viewTable(PDG_t::kPiPlus, thisTable.lutPi());
+    smearer.viewTable(PDG_t::kKPlus, thisTable.lutKa());
+    smearer.viewTable(PDG_t::kProton, thisTable.lutPr());
 
-    for (const auto& mcCollision : mcCollisions) {
+    for (const auto& _ : mcCollisions) {
       for (const auto& mcParticle : mcParticles) {
         if (!pdgsToBeHandled.count(std::abs(mcParticle.pdgCode()))) {
           continue;
