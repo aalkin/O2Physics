@@ -52,9 +52,9 @@ struct TestCcdbConsumer0 {
 
   void process(o2::aod::McCollisions const& mcCollisions, o2::aod::McParticles const& mcParticles, o2::aod::A3LookUpTables const& luts)
   {
-    for (const auto& mcCollision : mcCollisions) {
-      o2::delphes::DelphesO2TrackSmearer smearer;
-      const auto thisTable = luts.rawIteratorAt(0);
+    for (const auto& _ : mcCollisions) {
+      o2::delphes::TrackSmearer smearer;
+      const auto thisTable = luts.begin();
       // smearer.viewTable(static_cast<int>(PDG_t::kElectron), thisTable.lutEl());
       // smearer.viewTable(static_cast<int>(PDG_t::kMuonMinus), thisTable.lutMu());
       // smearer.viewTable(static_cast<int>(PDG_t::kPiPlus), thisTable.lutPi());

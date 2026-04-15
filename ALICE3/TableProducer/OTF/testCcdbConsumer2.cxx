@@ -36,7 +36,7 @@ struct TestCcdbConsumer2 {
   o2::framework::HistogramRegistry histos{"Histos", {}, o2::framework::OutputObjHandlingPolicy::AnalysisObject};
   o2::framework::ConfigurableAxis axisDeltaPt{"axisDeltaPt", {200, -0.2f, +0.2f}, "#Delta p_{T}"};
 
-  o2::delphes::DelphesO2TrackSmearer smearer;
+  o2::delphes::TrackSmearer smearer;
   o2::framework::Service<o2::framework::O2DatabasePDG> pdgDB;
   const std::unordered_set<int> pdgsToBeHandled = {PDG_t::kElectron, PDG_t::kMuonMinus, PDG_t::kPiPlus, PDG_t::kKPlus, PDG_t::kProton};
 

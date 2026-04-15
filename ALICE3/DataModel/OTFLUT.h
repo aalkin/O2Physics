@@ -20,6 +20,8 @@
 #define ALICE3_DATAMODEL_OTFLUT_H_
 
 #include "Framework/AnalysisDataModel.h"
+#include <TClass.h>
+#include <TBufferFile.h>
 
 namespace o2
 {
@@ -28,11 +30,11 @@ namespace aod
 namespace otf::lut
 {
 
-DECLARE_SOA_CCDB_COLUMN(LutEl, lutEl, std::string_view, "Users/j/jekarlss/ccdbUploadTest3/luts/lutEl"); //!
-DECLARE_SOA_CCDB_COLUMN(LutMu, lutMu, std::string_view, "Users/j/jekarlss/ccdbUploadTest3/luts/lutMu"); //!
-DECLARE_SOA_CCDB_COLUMN(LutPi, lutPi, std::string_view, "Users/j/jekarlss/ccdbUploadTest3/luts/lutPi"); //!
-DECLARE_SOA_CCDB_COLUMN(LutKa, lutKa, std::string_view, "Users/j/jekarlss/ccdbUploadTest3/luts/lutKa"); //!
-DECLARE_SOA_CCDB_COLUMN(LutPr, lutPr, std::string_view, "Users/j/jekarlss/ccdbUploadTest3/luts/lutPr"); //!
+DECLARE_SOA_CCDB_COLUMN(LutEl, lutEl, std::span<std::byte>, "Users/j/jekarlss/ccdbUploadTest3/luts/lutEl"); //!
+DECLARE_SOA_CCDB_COLUMN(LutMu, lutMu, std::span<std::byte>, "Users/j/jekarlss/ccdbUploadTest3/luts/lutMu"); //!
+DECLARE_SOA_CCDB_COLUMN(LutPi, lutPi, std::span<std::byte>, "Users/j/jekarlss/ccdbUploadTest3/luts/lutPi"); //!
+DECLARE_SOA_CCDB_COLUMN(LutKa, lutKa, std::span<std::byte>, "Users/j/jekarlss/ccdbUploadTest3/luts/lutKa"); //!
+DECLARE_SOA_CCDB_COLUMN(LutPr, lutPr, std::span<std::byte>, "Users/j/jekarlss/ccdbUploadTest3/luts/lutPr"); //!
 
 } // namespace otf::lut
 

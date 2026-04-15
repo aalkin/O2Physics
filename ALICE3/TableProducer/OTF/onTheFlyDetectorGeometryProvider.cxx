@@ -28,61 +28,20 @@
 #include <string>
 #include <vector>
 
+using namespace o2::framework;
+
 struct OnTheFlyDetectorGeometryProvider {
-  o2::framework::HistogramRegistry histos{"Histos", {}, o2::framework::OutputObjHandlingPolicy::AnalysisObject};
-  o2::framework::Configurable<bool> cleanLutWhenLoaded{"cleanLutWhenLoaded", true, "clean LUTs after being loaded to save disk space"};
-  o2::framework::Configurable<std::vector<std::string>> detectorConfiguration{"detectorConfiguration",
+  HistogramRegistry histos{"Histos", {}, o2::framework::OutputObjHandlingPolicy::AnalysisObject};
+  Configurable<bool> cleanLutWhenLoaded{"cleanLutWhenLoaded", true, "clean LUTs after being loaded to save disk space"};
+  Configurable<std::vector<std::string>> detectorConfiguration{"detectorConfiguration",
                                                                               std::vector<std::string>{"$O2PHYSICS_ROOT/share/alice3/a3geometry_v3.ini"},
                                                                               "Paths of the detector geometry configuration files"};
-  o2::framework::Produces<o2::aod::Timestamps> tableTimestamps;
-  o2::framework::Service<o2::ccdb::BasicCCDBManager> ccdb;
+  Produces<o2::aod::Timestamps> tableTimestamps;
+  Service<o2::ccdb::BasicCCDBManager> ccdb;
 
-  bool ccdbIsInitialized = false;
-  void init(o2::framework::InitContext&)
+  void process(o2::aod::McCollisions const&, o2::aod::McParticles const&)
   {
-    // o2::fastsim::GeometryContainer geometryContainer; // Checking that the geometry files can be accessed and loaded
-    // geometryContainer.setCcdbManager(ccdb.operator->());
-    // LOG(info) << "On-the-fly detector geometry provider running.";
-    // if (detectorConfiguration.value.empty()) {
-    //   LOG(fatal) << "No detector configuration files provided.";
-    //   return;
-    // }
-    // int idx = 0;
-    // for (std::string& configFile : detectorConfiguration.value) {
-    //   LOG(info) << "Loading detector geometry from configuration file: " << configFile;
-    //   histos.add<TH1>(Form("GeometryConfigFile_%d", idx++), configFile.c_str(), o2::framework::HistType::kTH1D, {{1, 0, 1}})->Fill(0.5);
-    //   geometryContainer.addEntry(configFile);
-    // }
-
-    // // First we check that the magnetic field is consistent
-    // const int nGeometries = geometryContainer.getNumberOfConfigurations();
-    // const float mMagneticField = geometryContainer.getFloatValue(0, "global", "magneticfield");
-    // for (int icfg = 0; icfg < nGeometries; ++icfg) {
-    //   const float cfgBfield = geometryContainer.getFloatValue(icfg, "global", "magneticfield");
-    //   if (std::abs(cfgBfield - mMagneticField) > 1e-3) {
-    //     LOG(fatal) << "Inconsistent magnetic field values between configurations 0 and " << icfg << ": " << mMagneticField << " vs " << cfgBfield;
-    //   }
-    // }
-    LOG(info) << "Initialization completed";
-  }
-
-  void initCCDB()
-  {
-    if (!ccdbIsInitialized) {
-      tableTimestamps(o2::upgrade::TimestampLUT); // c2b3d801393540b7bddb949d600b199f, ecacb915-3d70-11f0-ac6f-808de0f5250c
-      ccdbIsInitialized = true;
-      LOG(info) << "CCDB initialization completed";
-    }
-  }
-
-  void process(o2::aod::McCollisions const& mcCollisions, o2::aod::McParticles const& mcParticles)
-  {
-    initCCDB();
-    for (const auto& mcCollision : mcCollisions) {
-      LOG(debug)<< "On-the-fly detector geometry provider processing " << mcCollision.size() << " collisions and " << mcParticles.size() << " particles.";
-    }
-
-    LOG(debug)<< "On-the-fly detector geometry provider processing " << mcCollisions.size() << " collisions and " << mcParticles.size() << " particles.";
+    tableTimestamps(o2::upgrade::TimestampLUT); // needs to be done for each timeframe - no extra fetches will happen!
   }
 };
 
