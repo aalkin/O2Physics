@@ -228,7 +228,6 @@ const lutEntry_t* TrackSmearer::getLUTEntry(const int pdg, const float nch, cons
   }
 
   const auto& header = mLUTData[ipdg].getHeaderRef();
-
   auto inch = header.nchmap.find(nch);
   auto irad = header.radmap.find(radius);
   auto ieta = header.etamap.find(eta);
@@ -378,8 +377,13 @@ bool TrackSmearer::smearTrack(O2Track& o2track, int pdg, float nch)
   auto eta = o2track.getEta();
   float interpolatedEff = 0.0f;
   const lutEntry_t* lutEntry = getLUTEntry(pdg, nch, 0.f, eta, pt, interpolatedEff);
+  
+  // LOG(info) << " - - - ";
+  // LOG(info) << "For pt=" << o2track.getPt() << ", eta=" << o2track.getEta();
+  // lutEntry->print();
 
-  if (!lutEntry || !lutEntry->valid) {
+  // if (!lutEntry || !lutEntry->valid) {
+  if (!lutEntry) {
     return false;
   }
 

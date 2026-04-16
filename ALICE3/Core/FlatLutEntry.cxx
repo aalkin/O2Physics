@@ -70,9 +70,9 @@ bool lutHeader_t::check_version() const
 
 void lutHeader_t::print() const
 {
-  LOGF(info, " version: %d \n", version);
-  LOGF(info, "     pdg: %d \n", pdg);
-  LOGF(info, "   field: %f \n", field);
+  LOGF(info, " version: %d", version);
+  LOGF(info, "     pdg: %d", pdg);
+  LOGF(info, "   field: %f", field);
   LOGF(info, "  nchmap: ");
   nchmap.print();
   LOGF(info, "  radmap: ");
@@ -81,6 +81,14 @@ void lutHeader_t::print() const
   etamap.print();
   LOGF(info, "   ptmap: ");
   ptmap.print();
+}
+
+void lutEntry_t::print() const
+{
+  LOG(info) << "nch..: " << nch;
+  LOG(info) << "pt...: " << pt;
+  LOG(info) << "eta..: " << eta;
+  LOG(info) << "valid: " << valid;
 }
 
 void FlatLutData::initialize(const lutHeader_t& header)

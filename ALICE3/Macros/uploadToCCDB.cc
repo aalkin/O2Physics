@@ -59,8 +59,6 @@ void uploadToCCDB()
     try {
       string fullPath = Form("%s/%s", ccdbPath, subDirectories[lut]);
       ccdb.storeAsBinaryFile(reinterpret_cast<const char*>(lutData.data()), lutData.bytes(), files[lut], "o2::delphes::FlatLutData", fullPath, metadata, /*tsSOR*/ 1747442464000 , /*tsEOR*/ 1747442764000);
-
-      // ccdb.storeAsTFileAny(&lutData, fullPath, metadata, /*tsSOR*/ 1747442464000 , /*tsEOR*/ 1747442764000);
     } catch (const std::exception& e) {
       LOG(fatal) << "Failed at CCDB submission!";
     }
