@@ -16,7 +16,6 @@
 /// \author Nicolò Jacazio <nicolo.jacazio@cern.ch>, Universita del Piemonte Orientale (IT)
 ///
 
-#include "ALICE3/Core/FastTracker.h"
 #include "ALICE3/Core/FlatLutEntry.h"
 #include "ALICE3/Core/FlatTrackSmearer.h"
 #include "ALICE3/Core/TrackUtilities.h"
@@ -30,7 +29,6 @@
 
 #include <TPDGCode.h>
 
-#include <map>
 #include <string>
 #include <vector>
 
@@ -151,35 +149,37 @@ struct TestCcdbConsumer0 {
         }
 
         o2::track::TrackParCov fullTrack = o2::upgrade::convertMCParticleToO2Track(mcParticle, pdgDB);
+        float interpolatedEff;
+        const o2::delphes::lutEntry_t* lutEntry = fullSmearer.getLUTEntry(std::abs(mcParticle.pdgCode()), mcParticles.size(), 0.f, mcParticle.eta(), mcParticle.pt(), interpolatedEff);
         switch (std::abs(mcParticle.pdgCode())) {
           case PDG_t::kElectron:
-            success = fullSmearer.smearTrack(fullTrack, lutDataEl, mcParticles.size());
+            success = fullSmearer.smearTrack(fullTrack, lutEntry, mcParticles.size());
             if (success) {
               histos.fill(HIST("full/hDeltaPtEl"), (mcParticle.pt() - fullTrack.getPt()) / fullTrack.getPt());
               histos.fill(HIST("full/h2dDeltaPtEl"), fullTrack.getPt(), (mcParticle.pt() - fullTrack.getPt()) / fullTrack.getPt());
             }
             break;
           case PDG_t::kMuonMinus:
-            success = fullSmearer.smearTrack(fullTrack, lutDataMu, mcParticles.size());
+            success = fullSmearer.smearTrack(fullTrack, lutEntry, mcParticles.size());
             histos.fill(HIST("full/hDeltaPtMu"), (fullTrack.getPt() - mcParticle.pt()) / fullTrack.getPt());
             histos.fill(HIST("full/h2dDeltaPtMu"), fullTrack.getPt(), (mcParticle.pt() - fullTrack.getPt()) / fullTrack.getPt());
             break;
           case PDG_t::kPiPlus:
-            success = fullSmearer.smearTrack(fullTrack, lutDataPi, mcParticles.size());
+            success = fullSmearer.smearTrack(fullTrack, lutEntry, mcParticles.size());
             if (success) {
               histos.fill(HIST("full/hDeltaPtPi"), (fullTrack.getPt() - mcParticle.pt()) / fullTrack.getPt());
               histos.fill(HIST("full/h2dDeltaPtPi"), fullTrack.getPt(), (mcParticle.pt() - fullTrack.getPt()) / fullTrack.getPt());
             }
             break;
           case PDG_t::kKPlus:
-            success = fullSmearer.smearTrack(fullTrack, lutDataKa, mcParticles.size());
+            success = fullSmearer.smearTrack(fullTrack, lutEntry, mcParticles.size());
             if (success) {
               histos.fill(HIST("full/hDeltaPtKa"), (fullTrack.getPt() - mcParticle.pt()) / fullTrack.getPt());
               histos.fill(HIST("full/h2dDeltaPtKa"), fullTrack.getPt(), (mcParticle.pt() - fullTrack.getPt()) / fullTrack.getPt());
             }
             break;
           case PDG_t::kProton:
-            success = fullSmearer.smearTrack(fullTrack, lutDataPr, mcParticles.size());
+            success = fullSmearer.smearTrack(fullTrack, lutEntry, mcParticles.size());
             if (success) {
               histos.fill(HIST("full/hDeltaPtPr"), (fullTrack.getPt() - mcParticle.pt()) / fullTrack.getPt());
               histos.fill(HIST("full/h2dDeltaPtPr"), fullTrack.getPt(), (mcParticle.pt() - fullTrack.getPt()) / fullTrack.getPt());

@@ -16,8 +16,6 @@
 /// \author Nicolò Jacazio <nicolo.jacazio@cern.ch>, Universita del Piemonte Orientale (IT)
 ///
 
-#include "ALICE3/Core/FastTracker.h"
-#include "ALICE3/Core/FlatLutEntry.h"
 #include "ALICE3/Core/FlatTrackSmearer.h"
 #include "ALICE3/Core/TrackUtilities.h"
 #include "ALICE3/DataModel/OTFLUT.h"
@@ -30,7 +28,6 @@
 
 #include <TPDGCode.h>
 
-#include <map>
 #include <string>
 #include <vector>
 

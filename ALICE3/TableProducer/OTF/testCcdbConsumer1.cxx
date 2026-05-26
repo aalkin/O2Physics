@@ -38,6 +38,8 @@ struct TestCcdbConsumer1 {
   o2::framework::Service<o2::framework::O2DatabasePDG> pdgDB;
   const std::unordered_set<int> pdgsToBeHandled = {PDG_t::kElectron, PDG_t::kMuonMinus, PDG_t::kPiPlus, PDG_t::kKPlus, PDG_t::kProton};
 
+  o2::delphes::TrackSmearer smearer;
+
   void init(o2::framework::InitContext&)
   {
     histos.add("hDeltaPtEl", "hDeltaPtEl", o2::framework::kTH1D, {axisDeltaPt});
@@ -59,7 +61,6 @@ struct TestCcdbConsumer1 {
   void process(o2::aod::McCollisions const& mcCollisions, o2::aod::McParticles const& mcParticles, o2::aod::A3LookUpTables const& luts)
   {
     for (const auto& _ : mcCollisions) {
-      o2::delphes::TrackSmearer smearer;
       const auto thisTable = luts.begin();
       smearer.viewTable(PDG_t::kElectron, thisTable.lutEl());
       smearer.viewTable(PDG_t::kMuonMinus, thisTable.lutMu());
