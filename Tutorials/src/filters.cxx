@@ -64,7 +64,7 @@ struct Filters {
   }
 
   // process only collisions and tracks which pass all defined filter criteria
-  void process(soa::Filtered<aod::Collisions>::iterator const& collision, soa::Filtered<soa::Join<aod::TracksIU, aod::TracksExtra>> const& tracks)
+  void process(soa::Filtered<aod::Collisions_001From<o2::aod::Hash<"AOD"_h>>>::iterator const& collision, soa::Filtered<soa::Join<aod::TracksIU, aod::TracksExtra>> const& tracks)
   {
     LOGF(info, "Collision: %d [N = %d out of %d], -%.1f < %.3f < %.1f",
          collision.globalIndex(), tracks.size(), tracks.tableSize(), (float)vtxZ, collision.posZ(), (float)vtxZ);
