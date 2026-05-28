@@ -1191,7 +1191,7 @@ struct MultiplicityCounter {
           }
         }
       } else {
-        inclusiveRegistry.fill(HIST(PtGenNoEtaCut), particle.pt());
+        inclusiveRegistry.fill(HIST(PtGenNoEtaCut), particle.pt(), o);
         if (std::abs(particle.eta()) < estimatorEta) {
           inclusiveRegistry.fill(HIST(PtGen), particle.pt(), o);
           if (particle.pdgCode() == speciesIds[0]) {
