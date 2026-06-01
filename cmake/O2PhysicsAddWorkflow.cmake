@@ -51,6 +51,13 @@ function(o2physics_add_dpl_workflow baseTargetName)
     target_precompile_headers(${targetExeName} REUSE_FROM ${A_REUSE_FROM})
   endif()
 
+  if(APPLE)
+    add_custom_command(
+      TARGET ${targetExeName} POST_BUILD 
+      COMMAND codesign --sign - --verbose=4 --options=runtime --entitlements ${CMAKE_SOURCE_DIR}/entitlements.plist --deep --force $<TARGET_FILE:${targetExeName}>
+      VERBATIM)
+  endif()
+
   set(jsonFile $<TARGET_FILE_BASE_NAME:${targetExeName}>.json)
 
   add_custom_command(
