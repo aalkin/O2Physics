@@ -17,8 +17,10 @@
 #define PWGEM_PHOTONMESON_UTILS_TRACKSELECTION_H_
 
 #include <TPDGCode.h>
-#include <concepts>
+
 #include <cmath>
+#include <concepts>
+#include <cstdint>
 
 template <typename T>
 concept is_iterator = requires (T t)
@@ -29,9 +31,8 @@ concept is_iterator = requires (T t)
 };
 
 template <typename T>
-concept is_sentinel = requires (T t)
-{
-  std::same_as<decltype(t.index), int64_t const>;
+concept is_sentinel = requires(T t) {
+  requires(std::same_as<decltype(t.index), int64_t const>);
 };
 
 template <typename T>
