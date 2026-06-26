@@ -130,7 +130,7 @@ struct SinglePhoton {
   void add_histograms(THashList* list_photon, const std::string detname, TCuts1 const& cuts1)
   {
     for (auto& cut1 : cuts1) {
-      std::string cutname1 = cut1.GetName();
+      std::string cutname1 = cut1.getName();
 
       THashList* list_photon_subsys = reinterpret_cast<THashList*>(list_photon->FindObject(detname.data()));
       o2::aod::pwgem::photon::histogram::AddHistClass(list_photon_subsys, cutname1.data());
@@ -306,7 +306,7 @@ struct SinglePhoton {
 
       auto photons1_coll = photons1.sliceBy(perCollision1, collision.globalIndex());
       for (auto& cut : cuts1) {
-        THashList* list_photon_det_cut = static_cast<THashList*>(list_photon_det->FindObject(cut.GetName()));
+        THashList* list_photon_det_cut = static_cast<THashList*>(list_photon_det->FindObject(cut.getName().c_str()));
         for (auto& photon : photons1_coll) {
           if (!IsSelected<photontype>(photon, cut)) {
             continue;

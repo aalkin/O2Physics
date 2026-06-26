@@ -120,8 +120,8 @@ struct MaterialBudgetMC {
   {
     for (const auto& tagcut : tagcuts) {
       for (const auto& probecut : probecuts) {
-        std::string cutname1 = tagcut.GetName();
-        std::string cutname2 = probecut.GetName();
+        std::string cutname1 = tagcut.getName();
+        std::string cutname2 = probecut.getName();
 
         // if (cutname1 == cutname2) {
         //   continue;
@@ -133,7 +133,7 @@ struct MaterialBudgetMC {
         THashList* list_pair_subsys_photoncut = reinterpret_cast<THashList*>(list_pair_subsys->FindObject(photon_cut_name.data()));
 
         for (const auto& cut3 : cuts3) {
-          std::string pair_cut_name = cut3.GetName();
+          std::string pair_cut_name = cut3.getName();
           o2::aod::pwgem::photon::histogram::AddHistClass(list_pair_subsys_photoncut, pair_cut_name.data());
           THashList* list_pair_subsys_paircut = reinterpret_cast<THashList*>(list_pair_subsys_photoncut->FindObject(pair_cut_name.data()));
           o2::aod::pwgem::photon::histogram::DefineHistograms(list_pair_subsys_paircut, "material_budget_study", "Pair");
@@ -160,8 +160,8 @@ struct MaterialBudgetMC {
 
     // for V0s
     for (const auto& cut : fProbeCuts) {
-      const char* cutname = cut.GetName();
-      THashList* list_v0_cut = o2::aod::pwgem::photon::histogram::AddHistClass(list_v0, cutname);
+      std::string cutname = cut.getName();
+      THashList* list_v0_cut = o2::aod::pwgem::photon::histogram::AddHistClass(list_v0, cutname.c_str());
       o2::aod::pwgem::photon::histogram::DefineHistograms(list_v0_cut, "material_budget_study", "V0");
     }
 
@@ -288,7 +288,7 @@ struct MaterialBudgetMC {
           value[1] = photon.v0radius();
           value[2] = RecoDecay::constrainAngle(phi_cp);
           value[3] = eta_cp;
-          reinterpret_cast<THnSparseF*>(list_v0->FindObject(cut.GetName())->FindObject("hs_conv_point"))->Fill(value);
+          reinterpret_cast<THnSparseF*>(list_v0->FindObject(cut.getName().c_str())->FindObject("hs_conv_point"))->Fill(value);
 
         } // end of photon loop
       } // end of cut loop
@@ -381,7 +381,7 @@ struct MaterialBudgetMC {
                 value[3] = g2.v0radius();
                 value[4] = RecoDecay::constrainAngle(phi_cp2);
                 value[5] = eta_cp2;
-                reinterpret_cast<THnSparseF*>(list_pair_ss->FindObject(Form("%s_%s", tagcut.GetName(), probecut.GetName()))->FindObject(paircut.GetName())->FindObject("hs_conv_point_same"))->Fill(value);
+                reinterpret_cast<THnSparseF*>(list_pair_ss->FindObject(Form("%s_%s", tagcut.getName().c_str(), probecut.getName().c_str()))->FindObject(paircut.getName().c_str())->FindObject("hs_conv_point_same"))->Fill(value);
               } // end of pair cut loop
             } // end of g2 loop
           } // end of g1 loop

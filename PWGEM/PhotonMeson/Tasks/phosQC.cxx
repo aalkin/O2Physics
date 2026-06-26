@@ -35,7 +35,6 @@
 #include <cstdlib>
 #include <memory>
 #include <string>
-#include <string_view>
 #include <vector>
 
 using namespace o2;
@@ -72,14 +71,14 @@ struct phosQC {
     THashList* list_cluster = reinterpret_cast<THashList*>(fMainList->FindObject("Cluster"));
 
     for (const auto& cut : fPHOSCuts) {
-      const char* cutname = cut.GetName();
-      o2::aod::pwgem::photon::histogram::AddHistClass(list_cluster, cutname);
+      std::string cutname = cut.getName();
+      o2::aod::pwgem::photon::histogram::AddHistClass(list_cluster, cutname.c_str());
     }
 
     // for Clusters
     for (auto& cut : fPHOSCuts) {
-      std::string_view cutname = cut.GetName();
-      THashList* list = reinterpret_cast<THashList*>(fMainList->FindObject("Cluster")->FindObject(cutname.data()));
+      std::string cutname = cut.getName();
+      THashList* list = reinterpret_cast<THashList*>(fMainList->FindObject("Cluster")->FindObject(cutname.c_str()));
       o2::aod::pwgem::photon::histogram::DefineHistograms(list, "Cluster", "PHOS");
     }
   }
@@ -140,7 +139,7 @@ struct phosQC {
 
       auto clusters_per_coll = clusters.sliceBy(perCollision, collision.collisionId());
       for (const auto& cut : fPHOSCuts) {
-        THashList* list_cluster_cut = static_cast<THashList*>(list_cluster->FindObject(cut.GetName()));
+        THashList* list_cluster_cut = static_cast<THashList*>(list_cluster->FindObject(cut.getName().c_str()));
         int ng = 0;
         for (auto& cluster : clusters_per_coll) {
 
@@ -149,7 +148,7 @@ struct phosQC {
             ng++;
           }
         } // end of v0 loop
-        reinterpret_cast<TH1F*>(fMainList->FindObject("Cluster")->FindObject(cut.GetName())->FindObject("hNgamma"))->Fill(ng);
+        reinterpret_cast<TH1F*>(fMainList->FindObject("Cluster")->FindObject(cut.getName().c_str())->FindObject("hNgamma"))->Fill(ng);
       } // end of cut loop
     } // end of collision loop
   } // end of process
