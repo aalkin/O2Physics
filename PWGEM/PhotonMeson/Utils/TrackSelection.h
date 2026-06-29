@@ -23,8 +23,7 @@
 #include <cstdint>
 
 template <typename T>
-concept is_iterator = requires (T t)
-{
+concept is_iterator = requires(T t) {
   typename std::decay_t<T>::policy_t;
   typename std::decay_t<T>::all_columns;
   t.getIndexBindings();
@@ -36,15 +35,13 @@ concept is_sentinel = requires(T t) {
 };
 
 template <typename T>
-concept is_track_with_extra = requires (T t)
-{
+concept is_track_with_extra = requires(T t) {
   { t.hasITS() } -> std::same_as<bool>;
   { t.hasTPC() } -> std::same_as<bool>;
 };
 
 template <typename T>
-concept is_mc_particle = requires (T t)
-{
+concept is_mc_particle = requires(T t) {
   { t.pdgCode() } -> std::same_as<const int&>;
 };
 
