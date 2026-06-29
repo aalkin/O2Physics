@@ -16,12 +16,12 @@
 #ifndef PWGEM_PHOTONMESON_CORE_DALITZEECUT_H_
 #define PWGEM_PHOTONMESON_CORE_DALITZEECUT_H_
 
-#include <Framework/ASoA.h>
 #include "PWGEM/Dilepton/Utils/EMTrackUtilities.h"
 #include "PWGEM/Dilepton/Utils/PairUtilities.h"
 #include "PWGEM/PhotonMeson/Utils/TrackSelection.h"
 
 #include <CommonConstants/PhysicsConstants.h>
+#include <Framework/ASoA.h>
 
 #include <Math/Vector4D.h> // IWYU pragma: keep (do not replace with Math/Vector4Dfwd.h)
 #include <Math/Vector4Dfwd.h>
